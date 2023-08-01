@@ -29,7 +29,7 @@ public class draw extends JPanel {
     BufferedImage img2;
     BufferedImage img3;
     try {
-      img1= ImageIO.read(new File("D:/Documents/images/1.jpg"));
+      img1= ImageIO.read(new File("D:/Documents/images/3.jpg"));
       img2 = ImageIO.read(new File("D:/Documents/images/2.jpg"));
       img3 = ImageIO
         .read(new File("D:/Documents/images/white.jpg"));
@@ -79,17 +79,19 @@ public class draw extends JPanel {
     }
     int[][] matching = new int[width1][height1];
     matching[0][0] = 1;
-    int maxdiff = 8;
+    int maxdiff = 4;
+    int maxdest=2;
     for (int y = 0; y < height1; y++) {
     outerLoop:   for (int x = 0; x < width1; x++) {
          if (matching[x][y] == 0)continue;
                 Color color = new Color(img1.getRGB(x, y));
-                int maxdest=8;
+                
                 int restartx=-1;
                 int restarty=-1;
 for(int ydiff=-maxdest;ydiff<maxdest;ydiff++){
     for(int xdiff=-maxdest;xdiff<maxdest;xdiff++){
     if(x+xdiff<0||x+xdiff>=width1||y+ydiff<0||y+ydiff>=height1||matching[x+xdiff][y+ydiff]==1)continue;
+    if(xdiff==0&&ydiff==0)continue;
      
     Color color2= new Color(img1.getRGB(x+xdiff , y+ydiff));
        
@@ -110,21 +112,23 @@ for(int ydiff=-maxdest;ydiff<maxdest;ydiff++){
       
         }}
       }
-            //    if(restartx!=-1||restarty!=-1){
-            //     System.out.println(restarty);
-            //   if(restartx>0){
-            //     x=restartx-1;
-            //     y= restarty;}else{  x=width1-1;
-            //     y= restarty-1;}
-            //     continue outerLoop;
-            //     }}
+              //  if(restartx!=-1||restarty!=-1){
+             
+              // if(restartx>0){   System.out.println(x);
+              //   System.out.println(y);
+              //               System.out.println(restarty);
+              //   x=restartx-1;
+              //   y= restarty;}else{  x=width1-1;
+                     
+              //   y= restarty-1;}
+              //   continue outerLoop;
+              //   }
     }
     }
   
     for (int y = 0; y < height1; y++) {
       for (int x = 0; x < width1; x++) {
         if (matching[x][y] == 1)
-
           img3.setRGB(x, y, img1.getRGB(x, y));
       }
     }
