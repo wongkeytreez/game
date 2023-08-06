@@ -80,12 +80,13 @@ public class draw extends JPanel {
     }
     int[][] matching = new int[width1][height1];
     matching[0][0] = 1;
-    double maxdiff = 20;
-    int maxdest = 9;
-    int unnumbered = 1;
+    double maxdiff = 23;
+    int maxdest = 3;
+    boolean unnumbered = true;
     boolean firstunnumbered = true;
     int index = 0;
     double[][][] matchdiff = new double[width1][height1][3];
+    int[][] tested = new int[width1][height1];
     for (int y = 0; y < height1; y++) {
       for (int x = 0; x < width1; x++) {
         matchdiff[x][y][0] = maxdiff * 0.2126;
@@ -96,36 +97,40 @@ public class draw extends JPanel {
         //          matchdiff[x][y][2]=maxdiff;
       }
     }
-    while (unnumbered != -1) {
-      System.out.println(index);
+    while (unnumbered) {
+ System.out.println(index);
 
-      unnumbered = -1;
+      unnumbered = false;
       firstunnumbered = true;
       index++;
-      for (int y = 0; y < height1; y++) {
-        outerLoop: for (int x = 0; x < width1; x++) {
 
+      for (int y = 0; y < height1; y++) {
+        
+        outerLoop: for (int x = 0; x < width1; x++) {
+   
+          if(tested[x][y]==index)continue;
+          
           if (matching[x][y] == 0) {
 
-            unnumbered = index;
-            if (!firstunnumbered) {
+            unnumbered = true;
+            if (!firstunnumbered)
 
               continue;
-            } else {
 
-              matching[x][y] = index;
-              firstunnumbered = false;
-            }
+            matching[x][y] = index;
+            firstunnumbered = false;
+
           }
           if (matching[x][y] != index) continue;
           Color color = new Color(img1.getRGB(x, y));
+tested[x][y] =index;
 
-          if (color.getAlpha() != 255) System.out.println(color.getAlpha());
-          int restartx = -1;
-          int restarty = -1;
-          for (int ydiff = -maxdest; ydiff < maxdest + 1; ydiff++) {
-            for (int xdiff = -maxdest; xdiff < maxdest + 1; xdiff++) {
+
+          for (int ydiff = -maxdest; ydiff < maxdest+1 ; ydiff++) {
+            for (int xdiff = -maxdest; xdiff < maxdest+1 ; xdiff++) {
+              
               if (x + xdiff < 0 || x + xdiff >= width1 || y + ydiff < 0 || y + ydiff >= height1 || matching[x + xdiff][y + ydiff] == index) continue;
+
 
               if (xdiff == 0 && ydiff == 0) continue;
 
@@ -133,41 +138,36 @@ public class draw extends JPanel {
               float diffred = Math.abs(color2.getRed() - color.getRed());
               float diffgreen = Math.abs(color2.getGreen() - color.getGreen());
               float diffblue = Math.abs(color2.getBlue() - color.getBlue());
-
-              if (diffred < matchdiff[x + xdiff][y + ydiff][0] && diffgreen < matchdiff[x + xdiff][y + ydiff][1] && diffblue < matchdiff[x + xdiff][y + ydiff][2]) {
+              
+              if ((diffred < matchdiff[x + xdiff][y + ydiff][0]) && diffgreen < matchdiff[x + xdiff][y + ydiff][1] && diffblue < matchdiff[x + xdiff][y + ydiff][2]) {
 
                 matching[x + xdiff][y + ydiff] = index;
                 matchdiff[x + xdiff][y + ydiff][0] = diffred;
                 matchdiff[x + xdiff][y + ydiff][1] = diffgreen;
                 matchdiff[x + xdiff][y + ydiff][2] = diffblue;
-                if (xdiff > 0 || ydiff > 0 || restartx != -1) continue;
+                if (xdiff > 0 || ydiff > 0 ) continue;
 
-                restartx = x + xdiff;
-                restarty = y + ydiff;
+              if (x+xdiff > 0) {
+
+              x = x+xdiff - 1;
+              y = y+ydiff;
+            } else {
+              x = width1 - 1;
+              y = y+ydiff - 1;
+            }
+    
+            continue outerLoop;
 
               }
             }
           }
-          if (restartx != -1) {
-
-            if (restartx > 0) {
-
-              x = restartx - 1;
-              y = restarty;
-            } else {
-              x = width1 - 1;
-
-              y = restarty - 1;
-            }
-            continue outerLoop;
-          }
+        
         }
       }
     }
     for (int y = 0; y < height1; y++) {
       for (int x = 0; x < width1; x++) {
-        if (matching[x][y] == 1)
-          img3.setRGB(x, y, img1.getRGB(x, y));
+               img3.setRGB(x, y,matching[x][y]*2);
       }
     }
     System.out.println(img1.getRGB(0, 0 + 1) & 0x00FFFFFF);
