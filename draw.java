@@ -242,8 +242,9 @@ public class draw extends JPanel {
 
     //     long duration = endTime - startTime;
     //     System.out.println("Function took " + duration + " milliseconds to execute.");
-verify.start(pixels1,width1,height1,0,0);
-  
+pixels2 =verify.start(pixels1,width1,height1,0,0);
+     for (int y = 0; y < height1; y++) 
+       for (int x = 0; x < width1; x++) img2.setRGB(x,y, (pixels1[x][y][0] << 16) | (pixels1[x][y][1] << 8) | pixels1[x][y][2]);
 
     
  //   checkpixel(1, 0, 0);

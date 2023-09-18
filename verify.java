@@ -1,6 +1,8 @@
+import java.util.Arrays;
+
 public  class verify {
     static boolean[][] member;
-  static boolean[][] tested;
+
     static int sidecount = 3;
     static int[][][] pixels;
     static int imgwidth;
@@ -9,47 +11,107 @@ public  class verify {
     static double red;
     static double green;
     static double blue;
-    static int sume =0;
-  static  void start(int[][][]pixelsstart,int startwidth,int startheight,int startx,int starty){
+    static int maxdiff = 10;
+  static  int[][][] start(int[][][]pixelsstart,int startwidth,int startheight,int startx,int starty){
     member = new boolean[startwidth][startheight];
-tested = new boolean[startwidth][startheight];
+
     member[startx][starty]=true;
     pixels=pixelsstart;
     red = pixels[0][0][0];
     green = pixels[0][0][1];
     blue = pixels[0][0][2];
+    joinedpixels=0;
 imgwidth=startwidth;
 imgheight=startheight;
-    solidify(startx,starty);
-    //System.out.print(index);
-    }
-  static void solidify(int x,int y){
-     
-    if(x<0||x>=imgwidth||y<0||y>=imgheight)return;
-     
-    for(int ysides=0;ysides<2;ysides=ysides* -1 + (1 * ((ysides <= 0) ? 1 : 0)))
-    for(int xsides=0;xsides<2;xsides= xsides*-1 + (1 * ((xsides <= 0) ? 1 : 0))){
+    
+
+        
+ for(int checki=0;checki<50;checki++)
+     solidify(starty*startwidth+startx);
+          
+        
+        
       
-      if(x+xsides<0||x+xsides>=imgwidth||y+ysides<0||y+ysides>=imgheight)continue;
-      if(member[x+xsides][y+ysides]==true||tested[x+xsides][y+ysides]==true)continue;
-      tested[x+xsides][y+ysides]=true;
-    if(Math.abs(pixels[x+xsides][y+ysides][0]-red)<10){
-       member[x+xsides][y+ysides]=true;
-       joinedpixels+=1;
-       red+= (pixels[x+xsides][y+ysides][0]-red)/joinedpixels;
-      green+= (pixels[x+xsides][y+ysides][1]-green)/joinedpixels;
-      blue+= (pixels[x+xsides][y+ysides][2]-blue)/joinedpixels;
-//        System.out.print(x);
-//        System.out.print(" , ");
 
-// System.out.println(y);
-// try {
-//   Thread.sleep(2, y);
-// } catch (InterruptedException e) {
 
-// }
-       solidify(x+xsides, y+ysides);
+    return pixels;
+    }
+  static int[][][] solidify(int startint){
+    int[] todolist = new int[imgwidth*imgheight];
+    todolist[0]=startint;
+    int todolength=1;
+    boolean[][] tested = new boolean [imgwidth][imgheight];
+    while(todolength>0){
+
+    // manage x and y
+    int x =todolist[0]%imgwidth;
+    int y =todolist[0] / imgwidth;
+
+    // set main RGB
+    joinedpixels++;
+    red += (pixels[x][y][0]-red)/joinedpixels;
+    green += (pixels[x][y][1]-green)/joinedpixels;
+    blue += (pixels[x][y][2]-blue)/joinedpixels;
+
+    // manage todo list
+    for( int i = 0; i <todolength; i++ )
+    todolist[i]= todolist[i+1];
+    todolength--;
+
+    int checksize = 3;
+    double checkerpower = 0.3;
+    int maxlightdiff=20;
+    int thisRed=(int)(red+(pixels[x][y][0]-red)*checkerpower)-maxlightdiff;
+    int thisGreen=(int)(green+(pixels[x][y][1]-green)*checkerpower)-maxlightdiff;
+    int thisBlue=(int)(blue+(pixels[x][y][2]-blue)*checkerpower)-maxlightdiff;
+    for(int ydiff = -checksize;ydiff<checksize+1;ydiff++)
+    for(int xdiff = -(checksize-Math.abs(ydiff));xdiff<(checksize-Math.abs(ydiff))+1;xdiff++){
+  //  System.out.print(xdiff);
+  //  System.out.print(" ");
+  //  System.out.println(ydiff);
+    //  xdiff = (int) (Math.ceil(i/4)*((i%4>=2)?-1:1)*((i%2==0)?0:1));
+    //  ydiff = (int) (Math.ceil(i/4)*((i%4>=2)?-1:1)*((i%2==1)?0:1));
+
+
+     //System.out.println("2");
+
+   if(x+xdiff<imgwidth&&x+xdiff>-1&&y+ydiff<imgheight&&y+ydiff>-1&&!tested[x+xdiff][y+ydiff]){ 
+       
+      // double thisRed=red;
+      //   double thisGreen=green;
+      //   double thisBlue=blue;
+for(int i = -maxlightdiff;i<maxlightdiff+1;i++){
+  thisRed++;
+  thisGreen++;
+  thisBlue++;
+      if((Math.abs(thisRed-pixels[x+xdiff][y+ydiff][0])<maxdiff
+        && 
+        Math.abs(thisGreen-pixels[x+xdiff][y+ydiff][1])<maxdiff)||
+        (Math.abs(thisRed-pixels[x+xdiff][y+ydiff][0])<maxdiff
+        && 
+        Math.abs(thisBlue-pixels[x+xdiff][y+ydiff][2])<maxdiff)||
+        (Math.abs(thisGreen-pixels[x+xdiff][y+ydiff][1])<maxdiff
+        && 
+        Math.abs(thisBlue-pixels[x+xdiff][y+ydiff][2])<maxdiff)
+        ){
+      todolist[todolength]=  (y+ydiff) * imgwidth + (x+xdiff);
+      todolength++;
+    member[x+xdiff][y+ydiff]=true;
+    break;
+   }}
+      tested[x+xdiff][y+ydiff]=true;
     }
   }
+    
+
+     }
+    for(int i=0;i<imgwidth*imgheight;i++){
+       int x =i%imgwidth;
+      int y =i / imgwidth;
+      pixels[x][y][0]=(member[x][y])?(int)red:0;
+      pixels[x][y][1]=(member[x][y])?(int)green:0;
+      pixels[x][y][2]=(member[x][y])?(int)blue:0;
     }
-}
+   
+    return pixels;
+  }}
